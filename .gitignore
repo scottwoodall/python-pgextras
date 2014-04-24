@@ -1,5 +1,4 @@
 *.py[cod]
-
 # C extensions
 *.so
 
@@ -44,3 +43,6 @@ docs/_build
 
 # virtualenv
 venv
+
+# vim
+*.swp
