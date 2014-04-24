@@ -20,7 +20,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='pgextras',
     version='0.1.0',
-    description='Python port of Herokus pgextras',
+    description='Unofficial python port of Herokus pgextras',
     long_description=readme + '\n\n' + history,
     author='Scott Woodall',
     author_email='scott.woodall@gmail.com',
