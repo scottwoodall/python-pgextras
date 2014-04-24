@@ -86,15 +86,16 @@ OUTLIERS = """
 BLOCKING = """
     SELECT
         bl.pid AS blocked_pid,
-        ka.query AS blocking_statement,
+        ka.{query_column} AS blocking_statement,
         now() - ka.query_start AS blocking_duration,
         kl.pid AS blocking_pid,
-        a.query AS blocked_statement,
+        a.{query_column} AS blocked_statement,
         now() - a.query_start AS blocked_duration
-    FROM pg_catalog.pg_locks bl
-        JOIN pg_catalog.pg_stat_activity a ON bl.pid = a.pid
+    FROM
+        pg_catalog.pg_locks bl
+        JOIN pg_catalog.pg_stat_activity a ON bl.pid = a.{pid_column}
         JOIN pg_catalog.pg_locks kl
-        JOIN pg_catalog.pg_stat_activity ka ON kl.pid = ka.pid
+        JOIN pg_catalog.pg_stat_activity ka ON kl.pid = ka.{pid_column}
             ON bl.transactionid = kl.transactionid AND bl.pid != kl.pid
     WHERE NOT bl.granted
 """
@@ -112,7 +113,7 @@ INDEX_USAGE = """
 """
 
 CALLS = """
-    {query} interval '1 millisecond' * total_time AS exec_time,
+    {select} interval '1 millisecond' * total_time AS exec_time,
         to_char((total_time/sum(total_time) OVER()) * 100, 'FM90D0') || '%'
             AS prop_exec_time,
         to_char(calls, 'FM999G999G990') AS ncalls,
@@ -130,20 +131,20 @@ CALLS = """
 
 LOCKS = """
     SELECT
-        pg_stat_activity.pid,
+        pg_stat_activity.{pid_column},
         pg_class.relname,
         pg_locks.transactionid,
         pg_locks.granted,
-        substr(pg_stat_activity.query,1,30) AS query_snippet,
+        substr(pg_stat_activity.{query_column},1,30) AS query_snippet,
         age(now(),pg_stat_activity.query_start) AS "age"
     FROM
         pg_stat_activity,
         pg_locks LEFT OUTER JOIN pg_class ON (pg_locks.relation = pg_class.oid)
     WHERE
-        pg_stat_activity.query <> '<insufficient privilege>'
-            AND pg_locks.pid = pg_stat_activity.pid
+        pg_stat_activity.{query_column} <> '<insufficient privilege>'
+            AND pg_locks.pid = pg_stat_activity.{pid_column}
             AND pg_locks.mode = 'ExclusiveLock'
-            AND pg_stat_activity.pid <> pg_backend_pid()
+            AND pg_stat_activity.{pid_column} <> pg_backend_pid()
     ORDER BY query_start
 """
 
@@ -299,12 +300,13 @@ BLOAT = """
 
 LONG_RUNNING_QUERIES = """
      SELECT
-        pid,
+        {pid_column},
         now() - pg_stat_activity.query_start AS duration,
-        query AS query
+        {query_column} AS query
     FROM pg_stat_activity
     WHERE
-        pg_stat_activity.query <> ''::text
+        pg_stat_activity.{query_column} <> ''::text
+        {idle}
         AND now() - pg_stat_activity.query_start > interval '5 minutes'
     ORDER BY now() - pg_stat_activity.query_start DESC
 """
@@ -399,62 +401,32 @@ TOTAL_INDEX_SIZE = """
 
 MANDELBROT = """
      WITH RECURSIVE Z(IX, IY, CX, CY, X, Y, I) AS (
-        SELECT
-            IX,
-            IY,
-            X::float,
-            Y::float,
-            X::float,
-            Y::float,
-            0
-        FROM (
-            SELECT
-                -2.2 + 0.031 * i,
-                i
-            FROM generate_series(0,101) AS i
-        ) AS xgen(x,ix),
-        (
-            SELECT
-                -1.5 + 0.031 * i,
-                i
-            FROM generate_series(0,101) AS i
-        ) AS ygen(y,iy)
+        SELECT IX, IY, X::float, Y::float, X::float, Y::float, 0
+        FROM
+            (SELECT -2.2 + 0.031 * i, i FROM generate_series(0,101) AS i)
+                AS xgen(x,ix),
+            (SELECT -1.5 + 0.031 * i, i FROM generate_series(0,101) AS i)
+                AS ygen(y,iy)
         UNION ALL
-        SELECT
-            IX,
-            IY,
-            CX,
-            CY,
-            X * X - Y * Y + CX AS X,
-            Y * X * 2 + CY,
-            I + 1
-         FROM Z
-         WHERE X * X + Y * Y < 16::float
+        SELECT IX, IY, CX, CY, X * X - Y * Y + CX AS X, Y * X * 2 + CY, I + 1
+        FROM Z
+        WHERE X * X + Y * Y < 16::float
             AND I < 100
-         )
-        SELECT
-            array_to_string(
-                array_agg(
-                    SUBSTRING(
-                        ' .,,,-----++++%%%%@@@@#### ',
-                        LEAST(
-                            GREATEST(I,1),
-                            27
-                        ),
-                    1)
-                ),
-            '')
-        FROM (
-            SELECT
-                IX,
-                IY,
-                MAX(I) AS I
-            FROM Z
-            GROUP BY IY, IX
-            ORDER BY IY, IX
-        ) AS ZT
-     GROUP BY IY
-     ORDER BY IY
+    )
+    SELECT array_to_string(
+        array_agg(
+            SUBSTRING(' .,,,-----++++%%%%@@@@#### ',
+                LEAST(GREATEST(I,1), 27), 1)
+        ),
+    '')
+    FROM (
+        SELECT IX, IY, MAX(I) AS I
+        FROM Z
+        GROUP BY IY, IX
+        ORDER BY IY, IX
+    ) AS ZT
+    GROUP BY IY
+    ORDER BY IY
 """
 
 CACHE_HIT = """
@@ -490,4 +462,22 @@ PG_STATS_NOT_AVAILABLE = """
     postgresql.conf, restarting postgres and then running the
     following sql statement in your database:
     CREATE EXTENSION pg_stat_statements;
+"""
+
+PS = """
+    SELECT
+        {pid_column},
+        application_name AS source,
+        age(now(),query_start) AS running_for,
+        waiting,
+        {query_column} AS query
+    FROM pg_stat_activity
+    WHERE {query_column} <> '<insufficient privilege>'
+        AND {pid_column} <> pg_backend_pid()
+        {idle}
+    ORDER BY query_start DESC
+"""
+
+VERSION = """
+    SELECT version()
 """

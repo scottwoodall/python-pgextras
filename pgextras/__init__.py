@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+import re
+
 import psycopg2
+import psycopg2.extras
+
 from . import sql_constants as sql
 
 __author__ = 'Scott Woodall'
@@ -13,6 +17,7 @@ class PgExtras(object):
         self._pg_stat_statement = None
         self._cursor = None
         self._conn = None
+        self._pg_is_at_least_nine_two = None
 
     def __enter__(self):
         return self
@@ -23,16 +28,22 @@ class PgExtras(object):
     @property
     def cursor(self):
         if self._cursor is None:
-            self._conn = psycopg2.connect(self.dsn)
+            self._conn = psycopg2.connect(
+                self.dsn,
+                cursor_factory=psycopg2.extras.NamedTupleCursor
+            )
+
             self._cursor = self._conn.cursor()
 
         return self._cursor
 
     @property
     def pg_stat_statement(self):
+        # some queries require the pg_stat_statement module to be installed
+
         if self._pg_stat_statement is None:
             results = self.execute(sql.PG_STAT_STATEMENT)
-            is_available = results[0][0]
+            is_available = results[0].available
 
             if is_available:
                 self._pg_stat_statement = True
@@ -40,6 +51,40 @@ class PgExtras(object):
                 raise EnvironmentError(sql.PG_STATS_NOT_AVAILABLE)
 
         return self._pg_stat_statement
+
+    @property
+    def pg_is_at_least_nine_two(self):
+        # some queries have different syntax depending what version of postgres
+        # is running
+
+        if self._pg_is_at_least_nine_two is None:
+            results = self.version()
+            regex = re.compile("PostgreSQL (\d+\.\d+\.\d+) on")
+            matches = regex.match(results[0].version)
+            version = matches.groups()[0]
+
+            if version > '9.2.0':
+                self._pg_is_at_least_nine_two = True
+            else:
+                self._pg_is_at_least_nine_two = False
+
+        return self._pg_is_at_least_nine_two
+
+    @property
+    def query_column(self):
+        # PG9.2 changed column names
+        if self.pg_is_at_least_nine_two:
+            return 'query'
+        else:
+            return 'current_query'
+
+    @property
+    def pid_column(self):
+        # PG9.2 changed column names
+        if self.pg_is_at_least_nine_two:
+            return 'pid'
+        else:
+            return 'procpid'
 
     def close_db_connection(self):
         if self._cursor is not None:
@@ -74,7 +119,7 @@ class PgExtras(object):
 
         if self.pg_stat_statement:
             if truncate:
-                query = """
+                select = """
                     SELECT CASE
                         WHEN length(query) < 40
                         THEN query
@@ -82,15 +127,20 @@ class PgExtras(object):
                     END AS qry,
                 """
             else:
-                query = 'SELECT query,'
+                select = 'SELECT query,'
 
-            return self.execute(sql.CALLS.format(query=query))
+            return self.execute(sql.CALLS.format(select=select))
 
     def blocking(self):
         # display queries holding locks other queries are waiting to be
         # released
 
-        return self.execute(sql.BLOCKING)
+        return self.execute(
+            sql.BLOCKING.format(
+                query_column=self.query_column,
+                pid_column=self.pid_column
+            )
+        )
 
     def outliers(self, truncate=False):
         # show 10 queries that have longest execution time in aggregate
@@ -122,7 +172,18 @@ class PgExtras(object):
     def long_running_queries(self):
         # show all queries longer than five minutes by descending duration
 
-        return self.execute(sql.LONG_RUNNING_QUERIES)
+        if self.pg_is_at_least_nine_two:
+            idle = "AND state <> 'idle'"
+        else:
+            idle = "AND current_query <> '<IDLE>'"
+
+        return self.execute(
+            sql.LONG_RUNNING_QUERIES.format(
+                pid_column=self.pid_column,
+                query_column=self.query_column,
+                idle=idle
+            )
+        )
 
     def seq_scans(self):
         # show the count of sequential scans by table descending by order
@@ -171,10 +232,36 @@ class PgExtras(object):
     def locks(self):
         # display queries with active locks
 
-        return self.execute(sql.LOCKS)
+        return self.execute(
+            sql.LOCKS.format(
+                pid_column=self.pid_column,
+                query_column=self.query_column
+            )
+        )
 
     def table_indexes_size(self):
         # show the total size of all the indexes on each table, descending by
         # size
 
         return self.execute(sql.TABLE_INDEXES_SIZE)
+
+    def ps(self):
+        # view active queries with execution time
+
+        if self.pg_is_at_least_nine_two:
+            idle = "AND state <> 'idle'"
+        else:
+            idle = "AND current_query <> '<IDLE>'"
+
+        return self.execute(
+            sql.PS.format(
+                pid_column=self.pid_column,
+                query_column=self.query_column,
+                idle=idle
+            )
+        )
+
+    def version(self):
+        # get the postgres server version
+
+        return self.execute(sql.VERSION)
