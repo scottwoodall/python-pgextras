@@ -12,11 +12,11 @@ python-pgextras
         :target: https://pypi.python.org/pypi/pgextras
 
 
-Unofficial python port of Heroku's pgextras (https://github.com/heroku/heroku-pg-extras) that
-provides statistics for a Postgres instance that is not running on Heroku.
+Unofficial python port of `Heroku's pgextras <https://github.com/heroku/heroku-pg-extras>`_
+that provides statistics for a Postgres instance that is not running on Heroku.
 
-* Free software: BSD license
-* Documentation: http://python-pgextras.rtfd.org.
+* BSD license
+* `Documentation <http://python-pgextras.rtfd.org>`_
 
 Features
 --------
