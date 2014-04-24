@@ -17,7 +17,7 @@ class PgExtras(object):
         self._pg_stat_statement = None
         self._cursor = None
         self._conn = None
-        self._pg_is_at_least_nine_two = None
+        self._is_pg_at_least_nine_two = None
 
     def __enter__(self):
         return self
@@ -53,27 +53,27 @@ class PgExtras(object):
         return self._pg_stat_statement
 
     @property
-    def pg_is_at_least_nine_two(self):
+    def is_pg_at_least_nine_two(self):
         # some queries have different syntax depending what version of postgres
         # is running
 
-        if self._pg_is_at_least_nine_two is None:
+        if self._is_pg_at_least_nine_two is None:
             results = self.version()
             regex = re.compile("PostgreSQL (\d+\.\d+\.\d+) on")
             matches = regex.match(results[0].version)
             version = matches.groups()[0]
 
             if version > '9.2.0':
-                self._pg_is_at_least_nine_two = True
+                self._is_pg_at_least_nine_two = True
             else:
-                self._pg_is_at_least_nine_two = False
+                self._is_pg_at_least_nine_two = False
 
-        return self._pg_is_at_least_nine_two
+        return self._is_pg_at_least_nine_two
 
     @property
     def query_column(self):
         # PG9.2 changed column names
-        if self.pg_is_at_least_nine_two:
+        if self.is_pg_at_least_nine_two:
             return 'query'
         else:
             return 'current_query'
@@ -81,7 +81,7 @@ class PgExtras(object):
     @property
     def pid_column(self):
         # PG9.2 changed column names
-        if self.pg_is_at_least_nine_two:
+        if self.is_pg_at_least_nine_two:
             return 'pid'
         else:
             return 'procpid'
@@ -172,7 +172,7 @@ class PgExtras(object):
     def long_running_queries(self):
         # show all queries longer than five minutes by descending duration
 
-        if self.pg_is_at_least_nine_two:
+        if self.is_pg_at_least_nine_two:
             idle = "AND state <> 'idle'"
         else:
             idle = "AND current_query <> '<IDLE>'"
@@ -248,7 +248,7 @@ class PgExtras(object):
     def ps(self):
         # view active queries with execution time
 
-        if self.pg_is_at_least_nine_two:
+        if self.is_pg_at_least_nine_two:
             idle = "AND state <> 'idle'"
         else:
             idle = "AND current_query <> '<IDLE>'"
