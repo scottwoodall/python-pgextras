@@ -165,7 +165,7 @@ class PgExtras(object):
         return self.execute(sql.VACUUM_STATS)
 
     def bloat(self):
-        # how table and index bloat in your database ordered by most wasteful
+        # table and index bloat in your database ordered by most wasteful
 
         return self.execute(sql.BLOAT)
 
@@ -220,14 +220,9 @@ class PgExtras(object):
         return self.execute(sql.INDEX_SIZE)
 
     def total_index_size(self):
-        # show the total size of all indexes in MB
+        # show the total size of all indexes
 
         return self.execute(sql.TOTAL_INDEX_SIZE)
-
-    def mandelbrot(self):
-        # show the mandelbrot set
-
-        return self.execute(sql.MANDELBROT)
 
     def locks(self):
         # display queries with active locks
