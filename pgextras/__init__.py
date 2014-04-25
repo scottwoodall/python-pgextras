@@ -39,7 +39,9 @@ class PgExtras(object):
 
     @property
     def pg_stat_statement(self):
-        # some queries require the pg_stat_statement module to be installed
+        """
+        Some queries require the pg_stat_statement module to be installed
+        """
 
         if self._pg_stat_statement is None:
             results = self.execute(sql.PG_STAT_STATEMENT)
@@ -54,8 +56,10 @@ class PgExtras(object):
 
     @property
     def is_pg_at_least_nine_two(self):
-        # some queries have different syntax depending what version of postgres
-        # is running
+        """
+        Some queries have different syntax depending what version of postgres
+        is running
+        """
 
         if self._is_pg_at_least_nine_two is None:
             results = self.version()
@@ -72,7 +76,10 @@ class PgExtras(object):
 
     @property
     def query_column(self):
-        # PG9.2 changed column names
+        """
+        PG9.2 changed column names
+        """
+
         if self.is_pg_at_least_nine_two:
             return 'query'
         else:
@@ -80,7 +87,10 @@ class PgExtras(object):
 
     @property
     def pid_column(self):
-        # PG9.2 changed column names
+        """
+        PG9.2 changed column names
+        """
+
         if self.is_pg_at_least_nine_two:
             return 'pid'
         else:
@@ -94,8 +104,11 @@ class PgExtras(object):
             self._conn.close()
 
     def execute(self, statement):
-        # make the sql statement easier to read in case some of the queries we
-        # run end up in the output
+        """
+        Make the sql statement easier to read in case some of the queries we
+        run end up in the output
+        """
+
         sql = statement.replace('\n', '')
         sql = ' '.join(sql.split())
         self.cursor.execute(sql)
@@ -103,19 +116,26 @@ class PgExtras(object):
         return self.cursor.fetchall()
 
     def cache_hit(self):
-        # calculates your cache hit rate (effective databases are at 99% and
-        # up)
+        """
+        Calculates your cache hit rate (effective databases are at 99% and up)
+        """
 
         return self.execute(sql.CACHE_HIT)
 
     def index_usage(self):
-        # calculates your index hit rate (effective databases are at 99% and
-        # up)
+        """
+        Calculates your index hit rate (effective databases are at 99% and up)
+        """
 
         return self.execute(sql.INDEX_USAGE)
 
     def calls(self, truncate=False):
-        # show 10 most frequently called queries
+        """
+        Show 10 most frequently called queries
+        kwargs:
+            truncate -- trim the sql statement in the output if greater than
+                        40 chars
+        """
 
         if self.pg_stat_statement:
             if truncate:
@@ -132,8 +152,10 @@ class PgExtras(object):
             return self.execute(sql.CALLS.format(select=select))
 
     def blocking(self):
-        # display queries holding locks other queries are waiting to be
-        # released
+        """
+        Display queries holding locks other queries are waiting to be
+        released
+        """
 
         return self.execute(
             sql.BLOCKING.format(
@@ -143,7 +165,12 @@ class PgExtras(object):
         )
 
     def outliers(self, truncate=False):
-        # show 10 queries that have longest execution time in aggregate
+        """
+        Show 10 queries that have longest execution time in aggregate
+        kwargs:
+            truncate -- trim the sql statement in the output if greater than
+                        40 chars
+        """
 
         if self.pg_stat_statement:
             if truncate:
@@ -159,18 +186,24 @@ class PgExtras(object):
             return self.execute(sql.OUTLIERS.format(query=query))
 
     def vacuum_stats(self):
-        # show dead rows and whether an automatic vacuum is expected to be
-        # triggered
+        """
+        Show dead rows and whether an automatic vacuum is expected to be
+        triggered
+        """
 
         return self.execute(sql.VACUUM_STATS)
 
     def bloat(self):
-        # table and index bloat in your database ordered by most wasteful
+        """
+        Table and index bloat in your database ordered by most wasteful
+        """
 
         return self.execute(sql.BLOAT)
 
     def long_running_queries(self):
-        # show all queries longer than five minutes by descending duration
+        """
+        Show all queries longer than five minutes by descending duration
+        """
 
         if self.is_pg_at_least_nine_two:
             idle = "AND state <> 'idle'"
@@ -186,46 +219,62 @@ class PgExtras(object):
         )
 
     def seq_scans(self):
-        # show the count of sequential scans by table descending by order
+        """
+        Show the count of sequential scans by table descending by order
+        """
 
         return self.execute(sql.SEQ_SCANS)
 
     def unused_indexes(self):
-        # show unused and almost unused indexes, ordered by their size relative
-        # to the number of index scans. Exclude indexes of very small tables
-        # (less than 5 pages), where the planner will almost invariably select
-        # a sequential scan, but may not in the future as the table grows.
+        """
+        Show unused and almost unused indexes, ordered by their size relative
+        to the number of index scans. Exclude indexes of very small tables
+        (less than 5 pages), where the planner will almost invariably select
+        a sequential scan, but may not in the future as the table grows.
+        """
 
         return self.execute(sql.UNUSED_INDEXES)
 
     def total_table_size(self):
-        # show the size of the tables (including indexes), descending by size
+        """
+        Show the size of the tables (including indexes), descending by size
+        """
 
         return self.execute(sql.TOTAL_TABLE_SIZE)
 
     def total_indexes_size(self):
-        # show the total size of all the indexes on each table, descending by
-        # size
+        """
+        Show the total size of all the indexes on each table, descending by
+        size
+        """
 
         return self.execute(sql.TOTAL_INDEXES_SIZE)
 
     def table_size(self):
-        # show the size of the tables (excluding indexes), descending by size
+        """
+        Show the size of the tables (excluding indexes), descending by size
+        """
 
         return self.execute(sql.TABLE_SIZE)
 
     def index_size(self):
-        # show the size of indexes, descending by size
+        """
+        Show the size of indexes, descending by size
+        """
 
         return self.execute(sql.INDEX_SIZE)
 
     def total_index_size(self):
-        # show the total size of all indexes
+        """
+        Show the total size of all indexes
+        """
 
         return self.execute(sql.TOTAL_INDEX_SIZE)
 
     def locks(self):
-        # display queries with active locks
+        """
+        Display queries with active locks
+        """
 
         return self.execute(
             sql.LOCKS.format(
@@ -235,13 +284,17 @@ class PgExtras(object):
         )
 
     def table_indexes_size(self):
-        # show the total size of all the indexes on each table, descending by
-        # size
+        """
+        Show the total size of all the indexes on each table, descending by
+        size
+        """
 
         return self.execute(sql.TABLE_INDEXES_SIZE)
 
     def ps(self):
-        # view active queries with execution time
+        """
+        View active queries with execution time
+        """
 
         if self.is_pg_at_least_nine_two:
             idle = "AND state <> 'idle'"
@@ -257,6 +310,8 @@ class PgExtras(object):
         )
 
     def version(self):
-        # get the postgres server version
+        """
+        Get the postgres server version
+        """
 
         return self.execute(sql.VERSION)
