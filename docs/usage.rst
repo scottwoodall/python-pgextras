@@ -1,6 +1,6 @@
-========
+=====
 Usage
-========
+=====
 
 Your "dsn" value will be specific to the postgres database you want to connect to.
 See the `postgres documentation
