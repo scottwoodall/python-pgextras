@@ -19,61 +19,72 @@ for more information on configuring connection strings::
 PgExtras Class Methods
 ######################
 
-.cache_hit()
-************
-Calculates your cache hit rate (effective databases are at 99% and up).
-
-.index_usage()
-**************
-Calculates your index hit rate (effective databases are at 99% and up).
-
-.calls()
+.bloat()
 ********
-Show 10 most frequently called queries.
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.bloat
 
 .blocking()
 ***********
-Display queries holding locks other queries are waiting to be released.
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.blocking
 
-.outliers()
-***********
-Show 10 queries that have longest execution time in aggregate.
+.cache_hit()
+************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.cache_hit
 
-.vacuum_stats()
-***************
-Show dead rows and whether an automatic vacuum is expected to be triggered.
+.calls(truncate=False)
+**********************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.calls
 
-.bloat()
-********
-Table and index bloat in your database ordered by most wasteful.
-
-.long_running_queries()
-***********************
-Show all queries running longer than five minutes by descending duration.
-
-.sequence_scans()
-*****************
-Show the count of sequential scans by table descending by order.
-
-.unused_indexes()
-*****************
-Show unused and almost unused indexes, ordered by their size relative to the
-number of index scans. Exclude indexes of very small tables (less than 5
-pages), where the planner will almost invariably select a sequential scan,
-but may not in the future as the table grows.
-
-.total_table_size()
-*******************
-Show the size of the tables (including indexes), descending by size.
+.index_usage()
+**************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.index_usage
 
 .locks()
 ********
-Display queries with active locks.
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.locks
+
+.long_running_queries()
+***********************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.long_running_queries
+
+.outliers()
+***********
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.outliers
 
 .ps()
 *****
-View active queries with execution time.
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.ps
+
+.seq_scans()
+*****************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.seq_scans
+
+.total_table_size()
+*******************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.total_table_size
+
+.unused_indexes()
+*****************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.unused_indexes
+
+.vacuum_stats()
+***************
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.vacuum_stats
 
 .version()
 **********
-Get the Postgres server version.
+.. literalinclude:: ../pgextras/__init__.py
+    :pyObject: PgExtras.version
