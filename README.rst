@@ -23,6 +23,20 @@ with Heroku.
 Features
 ########
 
+Note: pgextras does not format the output as seen in all the examples below. Instead it
+returns an iterable that contains namedtuples. For example, the "Total Indexes Size"
+method returns the following::
+
+    [
+        Record(table='pgbench_accounts', index_size='2208 kB'),
+        Record(table='pgbench_tellers', index_size='16 kB'),
+        Record(table='pgbench_branches', index_size='16 kB'),
+        Record(table='pgbench_history', index_size='0 bytes')
+    ]
+
+It's up to you on how to format and present the data.
+
+
 Cache Hit
 *********
 Calculates your cache hit rate (effective databases are at 99% and up)::
