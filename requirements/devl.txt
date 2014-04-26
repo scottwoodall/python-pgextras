@@ -1,0 +1,5 @@
+-r common.txt
+coverage==3.7.1
+flake8==2.1.0
+sphinx==1.2.2
+tox==1.7.1
