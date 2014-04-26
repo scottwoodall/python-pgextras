@@ -20,6 +20,11 @@ with Heroku.
 * BSD license
 * `Documentation <http://python-pgextras.rtfd.org>`_
 
+TODO
+####
+
+* unit tests
+
 Features
 ########
 
@@ -248,8 +253,3 @@ Get the Postgres server version::
     | version                                                                                                                           |
     |-----------------------------------------------------------------------------------------------------------------------------------|
     | PostgreSQL 9.3.3 on x86_64-apple-darwin13.0.0, compiled by Apple LLVM version 5.0 (clang-500.2.79) (based on LLVM 3.3svn), 64-bit |
-
-TODO
-####
-
-* Unit tests
