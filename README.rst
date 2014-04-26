@@ -1,6 +1,6 @@
-===============================
+===============
 python-pgextras
-===============================
+===============
 
 .. image:: https://badge.fury.io/py/pgextras.png
     :target: http://badge.fury.io/py/pgextras
@@ -12,10 +12,10 @@ python-pgextras
         :target: https://pypi.python.org/pypi/pgextras
 
 
-Unofficial python port of `Heroku's pgextras <https://github.com/heroku/heroku-pg-extras>`_
-that provides various statistics for a Postgres instance. The biggest selling
-point of this module is that your Postgres database can be anywhere, not just
-with Heroku.
+Unofficial Python port of `Heroku's pgextras <https://github.com/heroku/heroku-pg-extras>`_
+that provides various statistics for a Postgres instance. The biggest difference
+of this module is that your Postgres database can be anywhere, not just
+hosted with Heroku.
 
 * BSD license
 * `Documentation <http://python-pgextras.rtfd.org>`_
