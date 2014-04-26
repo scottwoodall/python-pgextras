@@ -20,6 +20,10 @@ class PgExtras(object):
         self._is_pg_at_least_nine_two = None
 
     def __enter__(self):
+        """
+        The context manager convention is preferred so that if there are ever
+        any exceptions the database cursor/connection will always be closed.
+        """
         return self
 
     def __exit__(self, type, value, trace):
