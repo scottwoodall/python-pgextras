@@ -10,8 +10,6 @@ Tests for `pgextras` module.
 
 import unittest
 
-from pgextras import PgExtras
-
 
 class TestPgextras(unittest.TestCase):
 
