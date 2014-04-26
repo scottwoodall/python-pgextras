@@ -105,10 +105,14 @@ class PgExtras(object):
 
     def execute(self, statement):
         """
-        Make the sql statement easier to read in case some of the queries we
-        run end up in the output
+        Execute the given sql statement
+
+        kwargs:
+            statement: sql statement to run
         """
 
+        # Make the sql statement easier to read in case some of the queries we
+        # run end up in the output
         sql = statement.replace('\n', '')
         sql = ' '.join(sql.split())
         self.cursor.execute(sql)
@@ -132,9 +136,9 @@ class PgExtras(object):
     def calls(self, truncate=False):
         """
         Show 10 most frequently called queries
+
         kwargs:
-            truncate -- trim the sql statement in the output if greater than
-                        40 chars
+            truncate: trim the sql statement output if greater than 40 chars
         """
 
         if self.pg_stat_statement:
@@ -167,9 +171,9 @@ class PgExtras(object):
     def outliers(self, truncate=False):
         """
         Show 10 queries that have longest execution time in aggregate
+
         kwargs:
-            truncate -- trim the sql statement in the output if greater than
-                        40 chars
+            truncate: trim the sql statement output if greater than 40 chars
         """
 
         if self.pg_stat_statement:
