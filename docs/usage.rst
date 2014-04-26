@@ -12,9 +12,8 @@ for more information on configuring connection strings::
     with PgExtras(dsn='dbname=testing') as pg:
         results = pg.table_indexes_size()
 
-        if results is not None:
-            for row in results:
-                print(row)
+        for row in results:
+            print(row)
 
 PgExtras Class Methods
 ######################
