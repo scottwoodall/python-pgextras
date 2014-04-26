@@ -40,7 +40,8 @@ class PgExtras(object):
     @property
     def pg_stat_statement(self):
         """
-        Some queries require the pg_stat_statement module to be installed
+        Some queries require the pg_stat_statement module to be installed.
+        http://www.postgresql.org/docs/current/static/pgstatstatements.html
 
         :returns: boolean
         """
@@ -60,7 +61,7 @@ class PgExtras(object):
     def is_pg_at_least_nine_two(self):
         """
         Some queries have different syntax depending what version of postgres
-        is running
+        is running.
 
         :returns: boolean
         """
@@ -81,7 +82,7 @@ class PgExtras(object):
     @property
     def query_column(self):
         """
-        PG9.2 changed column names
+        PG9.2 changed column names.
 
         :returns: str
         """
@@ -94,7 +95,7 @@ class PgExtras(object):
     @property
     def pid_column(self):
         """
-        PG9.2 changed column names
+        PG9.2 changed column names.
 
         :returns: str
         """
@@ -113,7 +114,7 @@ class PgExtras(object):
 
     def execute(self, statement):
         """
-        Execute the given sql statement
+        Execute the given sql statement.
 
         :param statement: sql statement to run
         :returns: list
@@ -129,7 +130,7 @@ class PgExtras(object):
 
     def cache_hit(self):
         """
-        Calculates your cache hit rate (effective databases are at 99% and up)
+        Calculates your cache hit rate (effective databases are at 99% and up).
 
         :returns: list
         """
@@ -138,7 +139,7 @@ class PgExtras(object):
 
     def index_usage(self):
         """
-        Calculates your index hit rate (effective databases are at 99% and up)
+        Calculates your index hit rate (effective databases are at 99% and up).
 
         :returns: list
         """
@@ -147,7 +148,8 @@ class PgExtras(object):
 
     def calls(self, truncate=False):
         """
-        Show 10 most frequently called queries
+        Show 10 most frequently called queries. Requires the pg_stat_statements
+        Postgres module to be installed.
 
         :param truncate: trim the sql statement output if greater than 40 chars
         :returns: list
@@ -170,7 +172,7 @@ class PgExtras(object):
     def blocking(self):
         """
         Display queries holding locks other queries are waiting to be
-        released
+        released.
 
         :returns: list
         """
@@ -184,7 +186,8 @@ class PgExtras(object):
 
     def outliers(self, truncate=False):
         """
-        Show 10 queries that have longest execution time in aggregate
+        Show 10 queries that have longest execution time in aggregate. Requires
+        the pg_stat_statments Postgres module to be installed.
 
         :param truncate: trim the sql statement output if greater than 40 chars
         :returns: list
@@ -206,7 +209,7 @@ class PgExtras(object):
     def vacuum_stats(self):
         """
         Show dead rows and whether an automatic vacuum is expected to be
-        triggered
+        triggered.
 
         :returns: list
         """
@@ -215,7 +218,7 @@ class PgExtras(object):
 
     def bloat(self):
         """
-        Table and index bloat in your database ordered by most wasteful
+        Table and index bloat in your database ordered by most wasteful.
 
         :returns: list
         """
@@ -224,7 +227,7 @@ class PgExtras(object):
 
     def long_running_queries(self):
         """
-        Show all queries longer than five minutes by descending duration
+        Show all queries longer than five minutes by descending duration.
 
         :returns: list
         """
@@ -244,7 +247,7 @@ class PgExtras(object):
 
     def seq_scans(self):
         """
-        Show the count of sequential scans by table descending by order
+        Show the count of sequential scans by table descending by order.
 
         :returns: list
         """
@@ -265,7 +268,7 @@ class PgExtras(object):
 
     def total_table_size(self):
         """
-        Show the size of the tables (including indexes), descending by size
+        Show the size of the tables (including indexes), descending by size.
 
         :returns: list
         """
@@ -275,7 +278,7 @@ class PgExtras(object):
     def total_indexes_size(self):
         """
         Show the total size of all the indexes on each table, descending by
-        size
+        size.
 
         :returns: list
         """
@@ -284,7 +287,7 @@ class PgExtras(object):
 
     def table_size(self):
         """
-        Show the size of the tables (excluding indexes), descending by size
+        Show the size of the tables (excluding indexes), descending by size.
 
         :returns: list
         """
@@ -293,7 +296,7 @@ class PgExtras(object):
 
     def index_size(self):
         """
-        Show the size of indexes, descending by size
+        Show the size of indexes, descending by size.
 
         :returns: list
         """
@@ -302,7 +305,7 @@ class PgExtras(object):
 
     def total_index_size(self):
         """
-        Show the total size of all indexes
+        Show the total size of all indexes.
 
         :returns: list
         """
@@ -311,7 +314,7 @@ class PgExtras(object):
 
     def locks(self):
         """
-        Display queries with active locks
+        Display queries with active locks.
 
         :returns: list
         """
@@ -326,7 +329,7 @@ class PgExtras(object):
     def table_indexes_size(self):
         """
         Show the total size of all the indexes on each table, descending by
-        size
+        size.
 
         :returns: list
         """
@@ -335,7 +338,7 @@ class PgExtras(object):
 
     def ps(self):
         """
-        View active queries with execution time
+        View active queries with execution time.
 
         :returns: list
         """
@@ -355,7 +358,7 @@ class PgExtras(object):
 
     def version(self):
         """
-        Get the postgres server version
+        Get the Postgres server version.
 
         :returns: list
         """
