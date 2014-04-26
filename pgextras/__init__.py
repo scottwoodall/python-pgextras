@@ -41,6 +41,8 @@ class PgExtras(object):
     def pg_stat_statement(self):
         """
         Some queries require the pg_stat_statement module to be installed
+
+        :returns: boolean
         """
 
         if self._pg_stat_statement is None:
@@ -59,6 +61,8 @@ class PgExtras(object):
         """
         Some queries have different syntax depending what version of postgres
         is running
+
+        :returns: boolean
         """
 
         if self._is_pg_at_least_nine_two is None:
@@ -78,6 +82,8 @@ class PgExtras(object):
     def query_column(self):
         """
         PG9.2 changed column names
+
+        :returns: str
         """
 
         if self.is_pg_at_least_nine_two:
@@ -89,6 +95,8 @@ class PgExtras(object):
     def pid_column(self):
         """
         PG9.2 changed column names
+
+        :returns: str
         """
 
         if self.is_pg_at_least_nine_two:
@@ -107,8 +115,8 @@ class PgExtras(object):
         """
         Execute the given sql statement
 
-        kwargs:
-            statement: sql statement to run
+        :param statement: sql statement to run
+        :returns: list
         """
 
         # Make the sql statement easier to read in case some of the queries we
@@ -122,6 +130,8 @@ class PgExtras(object):
     def cache_hit(self):
         """
         Calculates your cache hit rate (effective databases are at 99% and up)
+
+        :returns: list
         """
 
         return self.execute(sql.CACHE_HIT)
@@ -129,6 +139,8 @@ class PgExtras(object):
     def index_usage(self):
         """
         Calculates your index hit rate (effective databases are at 99% and up)
+
+        :returns: list
         """
 
         return self.execute(sql.INDEX_USAGE)
@@ -137,8 +149,8 @@ class PgExtras(object):
         """
         Show 10 most frequently called queries
 
-        kwargs:
-            truncate: trim the sql statement output if greater than 40 chars
+        :param truncate: trim the sql statement output if greater than 40 chars
+        :returns: list
         """
 
         if self.pg_stat_statement:
@@ -159,6 +171,8 @@ class PgExtras(object):
         """
         Display queries holding locks other queries are waiting to be
         released
+
+        :returns: list
         """
 
         return self.execute(
@@ -172,8 +186,8 @@ class PgExtras(object):
         """
         Show 10 queries that have longest execution time in aggregate
 
-        kwargs:
-            truncate: trim the sql statement output if greater than 40 chars
+        :param truncate: trim the sql statement output if greater than 40 chars
+        :returns: list
         """
 
         if self.pg_stat_statement:
@@ -193,6 +207,8 @@ class PgExtras(object):
         """
         Show dead rows and whether an automatic vacuum is expected to be
         triggered
+
+        :returns: list
         """
 
         return self.execute(sql.VACUUM_STATS)
@@ -200,6 +216,8 @@ class PgExtras(object):
     def bloat(self):
         """
         Table and index bloat in your database ordered by most wasteful
+
+        :returns: list
         """
 
         return self.execute(sql.BLOAT)
@@ -207,6 +225,8 @@ class PgExtras(object):
     def long_running_queries(self):
         """
         Show all queries longer than five minutes by descending duration
+
+        :returns: list
         """
 
         if self.is_pg_at_least_nine_two:
@@ -225,6 +245,8 @@ class PgExtras(object):
     def seq_scans(self):
         """
         Show the count of sequential scans by table descending by order
+
+        :returns: list
         """
 
         return self.execute(sql.SEQ_SCANS)
@@ -235,6 +257,8 @@ class PgExtras(object):
         to the number of index scans. Exclude indexes of very small tables
         (less than 5 pages), where the planner will almost invariably select
         a sequential scan, but may not in the future as the table grows.
+
+        :returns: list
         """
 
         return self.execute(sql.UNUSED_INDEXES)
@@ -242,6 +266,8 @@ class PgExtras(object):
     def total_table_size(self):
         """
         Show the size of the tables (including indexes), descending by size
+
+        :returns: list
         """
 
         return self.execute(sql.TOTAL_TABLE_SIZE)
@@ -250,6 +276,8 @@ class PgExtras(object):
         """
         Show the total size of all the indexes on each table, descending by
         size
+
+        :returns: list
         """
 
         return self.execute(sql.TOTAL_INDEXES_SIZE)
@@ -257,6 +285,8 @@ class PgExtras(object):
     def table_size(self):
         """
         Show the size of the tables (excluding indexes), descending by size
+
+        :returns: list
         """
 
         return self.execute(sql.TABLE_SIZE)
@@ -264,6 +294,8 @@ class PgExtras(object):
     def index_size(self):
         """
         Show the size of indexes, descending by size
+
+        :returns: list
         """
 
         return self.execute(sql.INDEX_SIZE)
@@ -271,6 +303,8 @@ class PgExtras(object):
     def total_index_size(self):
         """
         Show the total size of all indexes
+
+        :returns: list
         """
 
         return self.execute(sql.TOTAL_INDEX_SIZE)
@@ -278,6 +312,8 @@ class PgExtras(object):
     def locks(self):
         """
         Display queries with active locks
+
+        :returns: list
         """
 
         return self.execute(
@@ -291,6 +327,8 @@ class PgExtras(object):
         """
         Show the total size of all the indexes on each table, descending by
         size
+
+        :returns: list
         """
 
         return self.execute(sql.TABLE_INDEXES_SIZE)
@@ -298,6 +336,8 @@ class PgExtras(object):
     def ps(self):
         """
         View active queries with execution time
+
+        :returns: list
         """
 
         if self.is_pg_at_least_nine_two:
@@ -316,6 +356,8 @@ class PgExtras(object):
     def version(self):
         """
         Get the postgres server version
+
+        :returns: list
         """
 
         return self.execute(sql.VERSION)

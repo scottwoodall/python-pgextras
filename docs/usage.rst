@@ -7,15 +7,17 @@ See the `postgres documentation
 <http://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING>`_
 for more information on configuring connection strings::
 
-    from pgextras import PgExtras
+    >>> from pgextras import PgExtras
+    >>> with PgExtras(dsn='dbname=testing') as pg:
+    ...     results = pg.bloat()
+    ...     for row in results:
+    ...         print(row)
+    ... 
+    Record(type='index', schemaname='public', object_name='addresses_to_geocode::addresses_to_geocode_address_trgm_idx', bloat=Decimal('1.6'), waste='233 MB')
+    Record(type='table', schemaname='public', object_name='addresses_to_geocode', bloat=Decimal('1.2'), waste='84 MB')
+    Record(type='table', schemaname='pg_catalog', object_name='pg_attribute', bloat=Decimal('2.5'), waste='1056 kB')
 
-    with PgExtras(dsn='dbname=testing') as pg:
-        results = pg.table_indexes_size()
-
-        for row in results:
-            print(row)
-
-PgExtras Class Methods
+Class Methods
 ######################
 
 .bloat()
