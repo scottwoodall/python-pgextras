@@ -34,7 +34,8 @@ method returns the following::
         Record(table='pgbench_history', index_size='0 bytes')
     ]
 
-It's up to you on how to format and present the data.
+It's up to you on how to format and present the data. The results below are
+formatted to make it easier to understand the data available to you.
 
 
 Cache Hit
@@ -252,4 +253,3 @@ TODO
 ####
 
 * Unit tests
-
