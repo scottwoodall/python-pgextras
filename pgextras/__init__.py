@@ -42,6 +42,31 @@ class PgExtras(object):
         return self._cursor
 
     @property
+    def query_column(self):
+        """
+        PG9.2 changed column names.
+
+        :returns: str
+        """
+
+        if self.is_pg_at_least_nine_two():
+            return 'query'
+        else:
+            return 'current_query'
+
+    @property
+    def pid_column(self):
+        """
+        PG9.2 changed column names.
+
+        :returns: str
+        """
+
+        if self.is_pg_at_least_nine_two():
+            return 'pid'
+        else:
+            return 'procpid'
+
     def pg_stat_statement(self):
         """
         Some queries require the pg_stat_statement module to be installed.
@@ -57,11 +82,18 @@ class PgExtras(object):
             if is_available:
                 self._pg_stat_statement = True
             else:
-                raise EnvironmentError(sql.PG_STATS_NOT_AVAILABLE)
+                raise Exception("""
+                    pg_stat_statements extension needs to be installed in the
+                    public schema first. This extension is only available on
+                    Postgres versions 9.2 or greater. You can install it by
+                    adding pg_stat_statements to shared_preload_libraries in
+                    postgresql.conf, restarting postgres and then running the
+                    following sql statement in your database:
+                    CREATE EXTENSION pg_stat_statements;
+                """)
 
         return self._pg_stat_statement
 
-    @property
     def is_pg_at_least_nine_two(self):
         """
         Some queries have different syntax depending what version of postgres
@@ -82,32 +114,6 @@ class PgExtras(object):
                 self._is_pg_at_least_nine_two = False
 
         return self._is_pg_at_least_nine_two
-
-    @property
-    def query_column(self):
-        """
-        PG9.2 changed column names.
-
-        :returns: str
-        """
-
-        if self.is_pg_at_least_nine_two:
-            return 'query'
-        else:
-            return 'current_query'
-
-    @property
-    def pid_column(self):
-        """
-        PG9.2 changed column names.
-
-        :returns: str
-        """
-
-        if self.is_pg_at_least_nine_two:
-            return 'pid'
-        else:
-            return 'procpid'
 
     def close_db_connection(self):
         if self._cursor is not None:
@@ -159,7 +165,7 @@ class PgExtras(object):
         :returns: list
         """
 
-        if self.pg_stat_statement:
+        if self.pg_stat_statement():
             if truncate:
                 select = """
                     SELECT CASE
@@ -197,7 +203,7 @@ class PgExtras(object):
         :returns: list
         """
 
-        if self.pg_stat_statement:
+        if self.pg_stat_statement():
             if truncate:
                 query = """
                     CASE WHEN length(query) < 40
@@ -236,7 +242,7 @@ class PgExtras(object):
         :returns: list
         """
 
-        if self.is_pg_at_least_nine_two:
+        if self.is_pg_at_least_nine_two():
             idle = "AND state <> 'idle'"
         else:
             idle = "AND current_query <> '<IDLE>'"
@@ -347,7 +353,7 @@ class PgExtras(object):
         :returns: list
         """
 
-        if self.is_pg_at_least_nine_two:
+        if self.is_pg_at_least_nine_two():
             idle = "AND state <> 'idle'"
         else:
             idle = "AND current_query <> '<IDLE>'"
