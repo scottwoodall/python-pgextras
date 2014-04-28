@@ -424,16 +424,6 @@ TABLE_INDEXES_SIZE = """
     ORDER BY pg_indexes_size(c.oid) DESC;
 """
 
-PG_STATS_NOT_AVAILABLE = """
-    pg_stat_statements extension needs to be installed in the
-    public schema first. This extension is only available on
-    Postgres versions 9.2 or greater. You can install it by
-    adding pg_stat_statements to shared_preload_libraries in
-    postgresql.conf, restarting postgres and then running the
-    following sql statement in your database:
-    CREATE EXTENSION pg_stat_statements;
-"""
-
 PS = """
     SELECT
         {pid_column},
