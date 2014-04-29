@@ -11,7 +11,7 @@ from pgextras import PgExtras, sql_constants as sql
 
 class TestPgextras(unittest.TestCase):
     def setUp(self):
-        self.dbname = 'pgextras_unittest'
+        self.dbname = 'python_pgextras_unittest'
         self.dsn = 'dbname={dbname}'.format(dbname=self.dbname)
         self.conn = psycopg2.connect(
             self.dsn,
