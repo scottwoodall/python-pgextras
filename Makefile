@@ -3,13 +3,18 @@
 help:
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
+	@echo "coverage - check code coverage quickly with the default Python"
+	@echo "dist - package"
+	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "lint - check style with flake8"
+	@echo "populate-test-db - create records for unit tests"
+	@echo "release - package and upload a release"
 	@echo "test - run tests quickly with the default Python"
 	@echo "test-all - run tests on every Python version with tox"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package"
+
+populate-test-db:
+	pgbench -i python_pgextras_unittest
+	pgbench -c10 python_pgextras_unittest
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
