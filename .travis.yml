@@ -15,6 +15,7 @@ script: python setup.py test
 before_script:
   - createuser -U postgres -s travis
   - psql -c 'CREATE DATABASE pgextras_unittest' -U postgres
+  - psql -d pgextra_testing -c "select version();"
 
 # install different versions of postgres, taken from
 # https://github.com/clkao/plv8x/blob/master/.travis.yml
@@ -34,7 +35,6 @@ before_install:
   - sudo echo "host    all         all         ::1/128               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
   - sudo chmod 777 /etc/postgresql/$PGVERSION/main/postgresql.conf
   - sudo echo "shared_preload_libraries = 'pg_stat_statements'" >> /etc/postgresql/$PGVERSION/main/postgresql.conf
-  - cat /etc/postgresql/$PGVERSION/main/postgresql.conf
   - sudo /etc/init.d/postgresql restart
 
 env:
