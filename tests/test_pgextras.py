@@ -61,6 +61,20 @@ class TestPgextras(unittest.TestCase):
 
         self.assertTrue(results[0].version)
 
+    def test_methods_have_four_tables(self):
+        number_of_pgbench_tables = 4
+        method_names = [
+            'table_indexes_size', 'index_usage', 'seq_scans',
+            'total_table_size', 'table_size', 'total_indexes_size'
+        ]
+
+        with PgExtras(dsn=self.dsn) as pg:
+            for method_name in method_names:
+                func = getattr(pg, method_name)
+                results = func()
+
+                self.assertTrue(len(results), number_of_pgbench_tables)
+
     def tearDown(self):
         self.cursor.close()
         self.conn.close()
