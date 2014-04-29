@@ -15,7 +15,7 @@ script: python setup.py test
 before_script:
   - createuser -U postgres -s travis
   - psql -c 'CREATE DATABASE pgextras_unittest' -U postgres
-  - psql -c 'select version()' -U postgres pgextras_unittest
+  - cat /etc/postgresql/$PGVERSION/main/PG_VERSION
   - pgbench -d -i -U postgres pgextras_unittest
   - pgbench -d -c10 -U postgres pgextras_unittest
 
