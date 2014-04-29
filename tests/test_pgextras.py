@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-test_pgextras
-----------------------------------
-
-Tests for `pgextras` module.
-"""
-
 import unittest
 
 import psycopg2
@@ -18,7 +11,7 @@ from pgextras import PgExtras, sql_constants as sql
 
 class TestPgextras(unittest.TestCase):
     def setUp(self):
-        self.dsn = 'dbname=bench'
+        self.dsn = 'dbname=pgextras_unittest'
         self.conn = psycopg2.connect(
             self.dsn,
             cursor_factory=psycopg2.extras.NamedTupleCursor
@@ -26,14 +19,16 @@ class TestPgextras(unittest.TestCase):
         self.cursor = self.conn.cursor()
 
     def drop_pg_stat_statement(self):
-        statement = "DROP EXTENSION pg_stat_statements"
-        self.cursor.execute(statement)
-        self.conn.commit()
+        if self.is_pg_stat_statement_installed():
+            statement = "DROP EXTENSION pg_stat_statements"
+            self.cursor.execute(statement)
+            self.conn.commit()
 
     def create_pg_stat_statement(self):
-        statement = "CREATE EXTENSION pg_stat_statements"
-        self.cursor.execute(statement)
-        self.conn.commit()
+        if not self.is_pg_stat_statement_installed():
+            statement = "CREATE EXTENSION pg_stat_statements"
+            self.cursor.execute(statement)
+            self.conn.commit()
 
     def is_pg_stat_statement_installed(self):
         self.cursor.execute(sql.PG_STAT_STATEMENT)
@@ -42,15 +37,13 @@ class TestPgextras(unittest.TestCase):
         return results[0].available
 
     def test_that_pg_stat_statement_is_installed(self):
-        if not self.is_pg_stat_statement_installed():
-            self.create_pg_stat_statement()
+        self.create_pg_stat_statement()
 
         with PgExtras(dsn=self.dsn) as pg:
             self.assertTrue(pg.pg_stat_statement)
 
     def test_that_pg_stat_statement_is_not_installed(self):
-        if self.is_pg_stat_statement_installed():
-            self.drop_pg_stat_statement()
+        self.drop_pg_stat_statement()
 
         with PgExtras(dsn=self.dsn) as pg:
             self.assertRaises(Exception, pg.pg_stat_statement)
