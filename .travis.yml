@@ -28,11 +28,12 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confnew" install postgresql-$PGVERSION postgresql-server-dev-$PGVERSION
   - sudo chmod 777 /etc/postgresql/$PGVERSION/main/pg_hba.conf
-  - cat /etc/postgresql/$PGVERSION/main/postgresql.conf
   - sudo echo "local   all         postgres                          trust" > /etc/postgresql/$PGVERSION/main/pg_hba.conf
   - sudo echo "local   all         all                               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
   - sudo echo "host    all         all         127.0.0.1/32          trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
   - sudo echo "host    all         all         ::1/128               trust" >> /etc/postgresql/$PGVERSION/main/pg_hba.conf
+  - sudo echo "shared_preload_libraries = 'pg_stat_statements'" >> /etc/postgresql/$PGVERSION/main/postgresql.conf
+  - cat /etc/postgresql/$PGVERSION/main/postgresql.conf
   - sudo /etc/init.d/postgresql restart
 
 env:
