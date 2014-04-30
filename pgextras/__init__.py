@@ -97,7 +97,7 @@ class PgExtras(object):
     def is_pg_at_least_nine_two(self):
         """
         Some queries have different syntax depending what version of postgres
-        is running.
+        we are querying against.
 
         :returns: boolean
         """
@@ -142,7 +142,12 @@ class PgExtras(object):
         """
         Calculates your cache hit rate (effective databases are at 99% and up).
 
-        :returns: list
+        Record(
+            name='index hit rate',
+            ratio=Decimal('0.99994503346970922117')
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.CACHE_HIT)
@@ -151,7 +156,13 @@ class PgExtras(object):
         """
         Calculates your index hit rate (effective databases are at 99% and up).
 
-        :returns: list
+        Record(
+            relname='pgbench_history',
+            percent_of_times_index_used=None,
+            rows_in_table=249976
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.INDEX_USAGE)
@@ -161,8 +172,16 @@ class PgExtras(object):
         Show 10 most frequently called queries. Requires the pg_stat_statements
         Postgres module to be installed.
 
-        :param truncate: trim the sql statement output if greater than 40 chars
-        :returns: list
+        Record(
+            query='BEGIN;',
+            exec_time=datetime.timedelta(0, 0, 288174),
+            prop_exec_time='0.0%',
+            ncalls='845,590',
+            sync_io_time=datetime.timedelta(0)
+        )
+
+        :param truncate: trim the Record.query output if greater than 40 chars
+        :returns: list of Records
         """
 
         if self.pg_stat_statement():
@@ -184,7 +203,15 @@ class PgExtras(object):
         Display queries holding locks other queries are waiting to be
         released.
 
-        :returns: list
+        Record(
+            pid=40821,
+            source='',
+            running_for=datetime.timedelta(0, 0, 2857),
+            waiting=False,
+            query='SELECT pg_sleep(10);'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(
@@ -199,8 +226,16 @@ class PgExtras(object):
         Show 10 queries that have longest execution time in aggregate. Requires
         the pg_stat_statments Postgres module to be installed.
 
-        :param truncate: trim the sql statement output if greater than 40 chars
-        :returns: list
+        Record(
+            qry='UPDATE pgbench_tellers SET tbalance = tbalance + ?;',
+            exec_time=datetime.timedelta(0, 19944, 993099),
+            prop_exec_time='67.1%',
+            ncalls='845,589',
+            sync_io_time=datetime.timedelta(0)
+        )
+
+        :param truncate: trim the Record.qry output if greater than 40 chars
+        :returns: list of Records
         """
 
         if self.pg_stat_statement():
@@ -221,7 +256,18 @@ class PgExtras(object):
         Show dead rows and whether an automatic vacuum is expected to be
         triggered.
 
-        :returns: list
+        Record(
+            schema='public',
+            table='pgbench_tellers',
+            last_vacuum='2014-04-29 14:45',
+            last_autovacuum='2014-04-29 14:45',
+            rowcount='10',
+            dead_rowcount='0',
+            autovacuum_threshold='52',
+            expect_autovacuum=None
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.VACUUM_STATS)
@@ -230,7 +276,15 @@ class PgExtras(object):
         """
         Table and index bloat in your database ordered by most wasteful.
 
-        :returns: list
+        Record(
+            type='index',
+            schemaname='public',
+            object_name='pgbench_accounts::pgbench_accounts_pkey',
+            bloat=Decimal('0.2'),
+            waste='0 bytes'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.BLOAT)
@@ -239,7 +293,13 @@ class PgExtras(object):
         """
         Show all queries longer than five minutes by descending duration.
 
-        :returns: list
+        Record(
+            pid=19578,
+            duration=datetime.timedelta(0, 19944, 993099),
+            query='SELECT * FROM students'
+        )
+
+        :returns: list of Records
         """
 
         if self.is_pg_at_least_nine_two():
@@ -259,7 +319,12 @@ class PgExtras(object):
         """
         Show the count of sequential scans by table descending by order.
 
-        :returns: list
+        Record(
+            name='pgbench_branches',
+            count=237
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.SEQ_SCANS)
@@ -271,7 +336,14 @@ class PgExtras(object):
         (less than 5 pages), where the planner will almost invariably select
         a sequential scan, but may not in the future as the table grows.
 
-        :returns: list
+        Record(
+            table='public.grade_levels',
+            index='index_placement_attempts_on_grade_level_id',
+            index_size='97 MB',
+            index_scans=0
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.UNUSED_INDEXES)
@@ -280,7 +352,12 @@ class PgExtras(object):
         """
         Show the size of the tables (including indexes), descending by size.
 
-        :returns: list
+        Record(
+            name='pgbench_accounts',
+            size='15 MB'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.TOTAL_TABLE_SIZE)
@@ -290,7 +367,12 @@ class PgExtras(object):
         Show the total size of all the indexes on each table, descending by
         size.
 
-        :returns: list
+        Record(
+            table='pgbench_accounts',
+            index_size='2208 kB'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.TOTAL_INDEXES_SIZE)
@@ -317,7 +399,12 @@ class PgExtras(object):
         """
         Show the total size of all indexes.
 
-        :returns: list
+        Record(
+            name='pgbench_accounts',
+            size='13 MB'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.TOTAL_INDEX_SIZE)
@@ -326,7 +413,16 @@ class PgExtras(object):
         """
         Display queries with active locks.
 
-        :returns: list
+        Record(
+            procpid=31776,
+            relname=None,
+            transactionid=None,
+            granted=True,
+            query_snippet='select * from hello;',
+            age=datetime.timedelta(0, 0, 288174),
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(
@@ -341,7 +437,12 @@ class PgExtras(object):
         Show the total size of all the indexes on each table, descending by
         size.
 
-        :returns: list
+        Record(
+            table='pgbench_accounts',
+            index_size='2208 kB'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.TABLE_INDEXES_SIZE)
@@ -350,7 +451,15 @@ class PgExtras(object):
         """
         View active queries with execution time.
 
-        :returns: list
+        Record(
+            pid=28023,
+            source='pgbench',
+            running_for=datetime.timedelta(0, 0, 288174),
+            waiting=0,
+            query='UPDATE pgbench_accounts SET abalance = abalance + 423;'
+        )
+
+        :returns: list of Records
         """
 
         if self.is_pg_at_least_nine_two():
@@ -370,7 +479,11 @@ class PgExtras(object):
         """
         Get the Postgres server version.
 
-        :returns: list
+        Record(
+            version='PostgreSQL 9.3.3 on x86_64-apple-darwin13.0.0'
+        )
+
+        :returns: list of Records
         """
 
         return self.execute(sql.VERSION)
