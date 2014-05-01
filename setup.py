@@ -19,7 +19,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='pgextras',
-    version='0.1.0',
+    version='0.1.1',
     description="Unofficial Python port of Heroku's pgextras that provides"
                 " various statistics for a Postgres instance.",
     long_description=readme + '\n\n' + history,
