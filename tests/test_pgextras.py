@@ -93,6 +93,17 @@ class TestPgextras(unittest.TestCase):
 
                 self.assertTrue(len(results), 4)
 
+    def test_methods_have_ten_results(self):
+        self.create_pg_stat_statement()
+        method_names = ['calls']
+
+        with PgExtras(dsn=self.dsn) as pg:
+            for method_name in method_names:
+                func = getattr(pg, method_name)
+                results = func()
+
+                self.assertTrue(len(results), 10)
+
     def test_blocking(self):
         statement = """
             UPDATE pgbench_branches
@@ -169,6 +180,19 @@ class TestPgextras(unittest.TestCase):
             self.assertEqual(pg.query_column,  'current_query')
             mockery.return_value = True
             self.assertEqual(pg.query_column,  'query')
+
+    @patch.object(PgExtras, 'version')
+    def test_parsing_postgres_version_number(self, mockery):
+        Record = type('Record', (object, ), {
+            'version': 'PostgreSQL 9.3.3 on x86_64-apple-darwin13.0.0'
+        })
+        mockery.return_value = [Record]
+
+        with PgExtras(dsn=self.dsn) as pg:
+            self.assertTrue(pg.is_pg_at_least_nine_two())
+            Record.version = 'PostgreSQL 9.1.1 on x86_64-apple-darwin13.0.0'
+            pg._is_pg_at_least_nine_two = None
+            self.assertFalse(pg.is_pg_at_least_nine_two())
 
     def tearDown(self):
         self.cursor.close()
