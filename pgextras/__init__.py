@@ -400,8 +400,7 @@ class PgExtras(object):
         Show the total size of all indexes.
 
         Record(
-            name='pgbench_accounts',
-            size='13 MB'
+            size='2240 kB'
         )
 
         :returns: list of Records
