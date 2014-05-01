@@ -11,6 +11,9 @@ python-pgextras
 .. image:: https://pypip.in/d/pgextras/badge.png
         :target: https://pypi.python.org/pypi/pgextras
 
+.. image:: https://coveralls.io/repos/scottwoodall/python-pgextras/badge.png
+        :target: https://coveralls.io/r/scottwoodall/python-pgextras
+
 
 Unofficial Python port of `Heroku's pgextras <https://github.com/heroku/heroku-pg-extras>`_
 that provides various statistics for a Postgres instance. The biggest difference
@@ -19,11 +22,6 @@ hosted with Heroku.
 
 * BSD license
 * `Documentation <http://python-pgextras.rtfd.org>`_
-
-TODO
-####
-
-* unit tests
 
 Features
 ########

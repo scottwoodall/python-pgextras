@@ -10,7 +10,7 @@ python:
 install: pip install -r requirements.txt
 
 # command to run tests, e.g. python setup.py test
-script: python setup.py test
+script: coverage run --source pgextras setup.py test
 
 before_script:
   - createuser -U postgres -s travis
@@ -42,3 +42,6 @@ before_install:
 env:
   - PGVERSION=9.2
   - PGVERSION=9.1
+
+after_success:
+    coveralls
