@@ -3,6 +3,7 @@
 
 import unittest
 
+from mock import patch
 import psycopg2
 import psycopg2.extras
 
@@ -41,7 +42,7 @@ class TestPgextras(unittest.TestCase):
         self.create_pg_stat_statement()
 
         with PgExtras(dsn=self.dsn) as pg:
-            self.assertTrue(pg.pg_stat_statement)
+            self.assertTrue(pg.pg_stat_statement())
 
     def test_that_pg_stat_statement_is_not_installed(self):
         self.drop_pg_stat_statement()
@@ -49,21 +50,37 @@ class TestPgextras(unittest.TestCase):
         with PgExtras(dsn=self.dsn) as pg:
             self.assertRaises(Exception, pg.pg_stat_statement)
 
-    def test_cache_hit(self):
+    def test_methods_have_one_result(self):
+        method_names = ['version', 'total_index_size']
+
         with PgExtras(dsn=self.dsn) as pg:
-            results = pg.cache_hit()
+            for method_name in method_names:
+                func = getattr(pg, method_name)
+                results = func()
 
-        self.assertEqual(results[0].name, 'index hit rate')
-        self.assertEqual(results[1].name, 'table hit rate')
+                self.assertTrue(len(results), 1)
 
-    def test_version(self):
+    def test_methods_have_two_results(self):
+        method_names = ['cache_hit']
+
         with PgExtras(dsn=self.dsn) as pg:
-            results = pg.version()
+            for method_name in method_names:
+                func = getattr(pg, method_name)
+                results = func()
 
-        self.assertTrue(results[0].version)
+                self.assertTrue(len(results), 2)
 
-    def test_methods_have_four_tables(self):
-        number_of_pgbench_tables = 4
+    def test_methods_have_three_results(self):
+        method_names = ['index_size']
+
+        with PgExtras(dsn=self.dsn) as pg:
+            for method_name in method_names:
+                func = getattr(pg, method_name)
+                results = func()
+
+                self.assertEqual(len(results), 3)
+
+    def test_methods_have_four_results(self):
         method_names = [
             'table_indexes_size', 'index_usage', 'seq_scans',
             'total_table_size', 'table_size', 'total_indexes_size'
@@ -74,7 +91,7 @@ class TestPgextras(unittest.TestCase):
                 func = getattr(pg, method_name)
                 results = func()
 
-                self.assertTrue(len(results), number_of_pgbench_tables)
+                self.assertTrue(len(results), 4)
 
     def test_blocking(self):
         statement = """
@@ -104,14 +121,54 @@ class TestPgextras(unittest.TestCase):
         with PgExtras(dsn=self.dsn) as pg:
             results = pg.blocking()
 
-        blocking_cursor.close()
-        blocking_conn.close()
+        self.assertEqual(len(results), 1)
 
-        while not async_conn.isexecuting():
-            async_cursor.close()
-            async_conn.close()
+    def test_ps(self):
+        """
+        If the test suite is ran back to back within one second of each other
+        there is a race condition and this test has the potential to fail.
+        There will be more than one result because the previous test suites run
+        of pg_sleep(2) is still in the pg_stat_activity table. There's also a
+        race condition that pg.ps() does not return within 2 seconds and the
+        sleep is already gone from the pg_stat_activity.
+        """
+
+        statement = """
+            SELECT pg_sleep(2);
+        """
+
+        async_conn = psycopg2.connect(
+            database=self.dbname,
+            cursor_factory=psycopg2.extras.NamedTupleCursor,
+            async=1
+        )
+
+        psycopg2.extras.wait_select(async_conn)
+        async_cursor = async_conn.cursor()
+        async_cursor.execute(statement)
+
+        with PgExtras(dsn=self.dsn) as pg:
+            results = pg.ps()
 
         self.assertEqual(len(results), 1)
+
+    @patch.object(PgExtras, 'is_pg_at_least_nine_two')
+    def test_that_pid_column_returns_correct_column_name(self, mockery):
+        mockery.return_value = False
+
+        with PgExtras(dsn=self.dsn) as pg:
+            self.assertEqual(pg.pid_column,  'procpid')
+            mockery.return_value = True
+            self.assertEqual(pg.pid_column,  'pid')
+
+    @patch.object(PgExtras, 'is_pg_at_least_nine_two')
+    def test_that_query_column_returns_correct_column_name(self, mockery):
+        mockery.return_value = False
+
+        with PgExtras(dsn=self.dsn) as pg:
+            self.assertEqual(pg.query_column,  'current_query')
+            mockery.return_value = True
+            self.assertEqual(pg.query_column,  'query')
 
     def tearDown(self):
         self.cursor.close()
