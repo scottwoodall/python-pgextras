@@ -97,13 +97,10 @@ class TestPgextras(unittest.TestCase):
         with PgExtras(dsn=self.dsn) as pg:
             if pg.is_pg_at_least_nine_two():
                 self.create_pg_stat_statement()
-
-            results = pg.calls()
-
-            if pg.pg_stat_statement():
+                results = pg.calls()
                 self.assertTrue(len(results), 10)
             else:
-                self.assertTrue(len(results), 0)
+                self.assertRaises(Exception, pg.calls)
 
     def test_blocking(self):
         statement = """
