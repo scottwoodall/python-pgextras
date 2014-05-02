@@ -21,8 +21,9 @@ of this module is that your Postgres database can be anywhere, not just
 hosted with Heroku.
 
 * BSD license
-* `Documentation <http://python-pgextras.rtfd.org>`_
 * Tested against 2.7 and 3.3
+* `Documentation <http://python-pgextras.rtfd.org>`_
+* `Github <https://github.com/scottwoodall/python-pgextras>`_
 
 Features
 ########
