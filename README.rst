@@ -22,6 +22,7 @@ hosted with Heroku.
 
 * BSD license
 * `Documentation <http://python-pgextras.rtfd.org>`_
+* Tested against 2.7 and 3.3
 
 Features
 ########
