@@ -69,13 +69,13 @@ Show 10 most frequently called queries::
 
     | qry                                     | exec_time      | prop_exec_time | ncalls   | sync_io_time   |
     |-----------------------------------------+----------------+----------------+----------+----------------|
-    | BEGIN;                                  | 0:00:00.140968 | 0.0%           | 414,000  | 0:00:00        |
-    | INSERT INTO pgbench_history (tid, bid.. | 0:00:03.788899 | 0.0%           | 414,000  | 0:00:00        |
-    | SELECT abalance FROM pgbench_accounts.. | 0:00:04.471754 | 0.0%           | 414,000  | 0:00:00        |
-    | UPDATE pgbench_accounts SET abalance .. | 0:00:21.798029 | 0.2%           | 414,000  | 0:00:00        |
-    | END;                                    | 0:00:00.126220 | 0.0%           | 414,000  | 0:00:00        |
-    | UPDATE pgbench_branches SET bbalance .. | 0:30:00.544749 | 15.9%          | 414,000  | 0:00:00        |
-    | UPDATE pgbench_tellers SET tbalance =.. | 2:38:45.396566 | 83.9%          | 414,000  | 0:00:00        |
+    | BEGIN;                                  | 0:00:00.140968 | 0.0%           | 414000   | 0:00:00        |
+    | INSERT INTO pgbench_history (tid, bid.. | 0:00:03.788899 | 0.0%           | 414000   | 0:00:00        |
+    | SELECT abalance FROM pgbench_accounts.. | 0:00:04.471754 | 0.0%           | 414000   | 0:00:00        |
+    | UPDATE pgbench_accounts SET abalance .. | 0:00:21.798029 | 0.2%           | 414000   | 0:00:00        |
+    | END;                                    | 0:00:00.126220 | 0.0%           | 414000   | 0:00:00        |
+    | UPDATE pgbench_branches SET bbalance .. | 0:30:00.544749 | 15.9%          | 414000   | 0:00:00        |
+    | UPDATE pgbench_tellers SET tbalance =.. | 2:38:45.396566 | 83.9%          | 414000   | 0:00:00        |
     | BEGIN                                   | 0:00:00.002141 | 0.0%           | 212      | 0:00:00        |
     | SELECT pid, application_name AS sourc.. | 0:00:00.039576 | 0.0%           | 77       | 0:00:00        |
     | SELECT exists( SELECT ? FROM pg_exten.. | 0:00:00.001085 | 0.0%           | 43       | 0:00:00        |
@@ -95,15 +95,15 @@ Show 10 queries that have longest execution time in aggregate::
 
     | qry                                     | exec_time      | prop_exec_time | ncalls   | sync_io_time   |
     |-----------------------------------------+----------------+----------------+----------+----------------|
-    | UPDATE pgbench_tellers SET tbalance =.. | 2:59:30.137916 | 83.9%          | 467,897  | 0:00:00        |
-    | UPDATE pgbench_branches SET bbalance .. | 0:33:53.945889 | 15.8%          | 467,856  | 0:00:00        |
-    | UPDATE pgbench_accounts SET abalance .. | 0:00:25.384166 | 0.2%           | 467,897  | 0:00:00        |
-    | SELECT abalance FROM pgbench_accounts.. | 0:00:05.086917 | 0.0%           | 467,897  | 0:00:00        |
-    | INSERT INTO pgbench_history (tid, bid.. | 0:00:04.356031 | 0.0%           | 467,848  | 0:00:00        |
+    | UPDATE pgbench_tellers SET tbalance =.. | 2:59:30.137916 | 83.9%          | 467897   | 0:00:00        |
+    | UPDATE pgbench_branches SET bbalance .. | 0:33:53.945889 | 15.8%          | 467856   | 0:00:00        |
+    | UPDATE pgbench_accounts SET abalance .. | 0:00:25.384166 | 0.2%           | 467897   | 0:00:00        |
+    | SELECT abalance FROM pgbench_accounts.. | 0:00:05.086917 | 0.0%           | 467897   | 0:00:00        |
+    | INSERT INTO pgbench_history (tid, bid.. | 0:00:04.356031 | 0.0%           | 467848   | 0:00:00        |
     | vacuum pgbench_branches                 | 0:00:00.336647 | 0.0%           | 17       | 0:00:00        |
     | select count(*) from pgbench_accounts ; | 0:00:00.294740 | 0.0%           | 1        | 0:00:00        |
-    | BEGIN;                                  | 0:00:00.160855 | 0.0%           | 467,897  | 0:00:00        |
-    | END;                                    | 0:00:00.142983 | 0.0%           | 467,848  | 0:00:00        |
+    | BEGIN;                                  | 0:00:00.160855 | 0.0%           | 467897   | 0:00:00        |
+    | END;                                    | 0:00:00.142983 | 0.0%           | 467848   | 0:00:00        |
     | SELECT relname, CASE idx_scan WHEN ? .. | 0:00:00.110683 | 0.0%           | 6        | 0:00:00        |
 
 Vacuum Stats
@@ -114,8 +114,8 @@ Show dead rows and whether an automatic vacuum is expected to be triggered::
     |----------+------------------+------------------+-------------------+------------+-----------------+------------------------+---------------------|
     | public   | pgbench_tellers  | 2014-04-24 20:02 | 2014-04-24 20:03  | 10         | 0               | 52                     |                     |
     | public   | pgbench_branches | 2014-04-24 20:02 | 2014-04-24 20:03  | 1          | 0               | 50                     |                     |
-    | public   | pgbench_history  | 2014-04-23 20:45 |                   | 15,000     | 0               | 3,050                  |                     |
-    | public   | pgbench_accounts | 2014-04-23 20:45 |                   | 100,000    | 17,581          | 20,050                 |                     |
+    | public   | pgbench_history  | 2014-04-23 20:45 |                   | 15000      | 0               | 3050                  |                     |
+    | public   | pgbench_accounts | 2014-04-23 20:45 |                   | 100000     | 17581          | 20050                 |                     |
 
 Bloat
 *****

@@ -176,7 +176,7 @@ class PgExtras(object):
             query='BEGIN;',
             exec_time=datetime.timedelta(0, 0, 288174),
             prop_exec_time='0.0%',
-            ncalls='845,590',
+            ncalls='845590',
             sync_io_time=datetime.timedelta(0)
         )
 
@@ -230,7 +230,7 @@ class PgExtras(object):
             qry='UPDATE pgbench_tellers SET tbalance = tbalance + ?;',
             exec_time=datetime.timedelta(0, 19944, 993099),
             prop_exec_time='67.1%',
-            ncalls='845,589',
+            ncalls='845589',
             sync_io_time=datetime.timedelta(0)
         )
 

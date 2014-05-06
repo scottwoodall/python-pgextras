@@ -44,13 +44,11 @@ VACUUM_STATS = """
         vacuum_settings.relname AS table,
         to_char(psut.last_vacuum, 'YYYY-MM-DD HH24:MI') AS last_vacuum,
         to_char(psut.last_autovacuum, 'YYYY-MM-DD HH24:MI') AS last_autovacuum,
-        to_char(pg_class.reltuples, '9G999G999G999') AS rowcount,
-        to_char(psut.n_dead_tup, '9G999G999G999') AS dead_rowcount,
-        to_char(
-            autovacuum_vacuum_threshold + (
-                autovacuum_vacuum_scale_factor::numeric * pg_class.reltuples),
-                '9G999G999G999'
-        ) AS autovacuum_threshold,
+        pg_class.reltuples AS rowcount,
+        psut.n_dead_tup AS dead_rowcount,
+        autovacuum_vacuum_threshold + (
+            autovacuum_vacuum_scale_factor::numeric * pg_class.reltuples)
+        AS autovacuum_threshold,
         CASE
             WHEN autovacuum_vacuum_threshold + (
                 autovacuum_vacuum_scale_factor::numeric * pg_class.reltuples
@@ -69,7 +67,7 @@ OUTLIERS = """
         to_char((total_time/sum(total_time) OVER()) * 100,
             'FM90D0') || '%' AS
         prop_exec_time,
-        to_char(calls, 'FM999G999G990') AS ncalls,
+        calls AS ncalls,
         interval '1 millisecond' * (blk_read_time + blk_write_time)
             AS sync_io_time
     FROM pg_stat_statements
@@ -116,7 +114,7 @@ CALLS = """
     {select} interval '1 millisecond' * total_time AS exec_time,
         to_char((total_time/sum(total_time) OVER()) * 100, 'FM90D0') || '%'
             AS prop_exec_time,
-        to_char(calls, 'FM999G999G990') AS ncalls,
+        calls AS ncalls,
         interval '1 millisecond' * (blk_read_time + blk_write_time)
             AS sync_io_time
     FROM pg_stat_statements
