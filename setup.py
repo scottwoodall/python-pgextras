@@ -34,6 +34,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'prettytable',
+        'psycopg2',
     ],
     license="BSD",
     zip_safe=False,
