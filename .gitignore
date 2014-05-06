@@ -43,6 +43,7 @@ docs/_build
 
 # virtualenv
 venv
+venv3.3
 
 # vim
 *.swp
