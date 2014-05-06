@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+from collections import namedtuple
 
 import psycopg2
 import psycopg2.extras
@@ -82,17 +83,23 @@ class PgExtras(object):
             if is_available:
                 self._pg_stat_statement = True
             else:
-                raise Exception("""
-                    pg_stat_statements extension needs to be installed in the
-                    public schema first. This extension is only available on
-                    Postgres versions 9.2 or greater. You can install it by
-                    adding pg_stat_statements to shared_preload_libraries in
-                    postgresql.conf, restarting postgres and then running the
-                    following sql statement in your database:
-                    CREATE EXTENSION pg_stat_statements;
-                """)
+                self._pg_stat_statement = False
 
         return self._pg_stat_statement
+
+    def get_missing_pg_stat_statement_error(self):
+        Record = namedtuple('Record', 'error')
+        error = """
+            pg_stat_statements extension needs to be installed in the
+            public schema first. This extension is only available on
+            Postgres versions 9.2 or greater. You can install it by
+            adding pg_stat_statements to shared_preload_libraries in
+            postgresql.conf, restarting postgres and then running the
+            following sql statement in your database:
+            CREATE EXTENSION pg_stat_statements;
+        """
+
+        return Record(error)
 
     def is_pg_at_least_nine_two(self):
         """
@@ -197,6 +204,8 @@ class PgExtras(object):
                 select = 'SELECT query,'
 
             return self.execute(sql.CALLS.format(select=select))
+        else:
+            return [self.get_missing_pg_stat_statement_error()]
 
     def blocking(self):
         """
@@ -250,6 +259,8 @@ class PgExtras(object):
                 query = 'query'
 
             return self.execute(sql.OUTLIERS.format(query=query))
+        else:
+            return [self.get_missing_pg_stat_statement_error()]
 
     def vacuum_stats(self):
         """

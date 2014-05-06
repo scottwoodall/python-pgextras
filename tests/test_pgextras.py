@@ -48,7 +48,7 @@ class TestPgextras(unittest.TestCase):
         self.drop_pg_stat_statement()
 
         with PgExtras(dsn=self.dsn) as pg:
-            self.assertRaises(Exception, pg.pg_stat_statement)
+            self.assertFalse(pg.pg_stat_statement())
 
     def test_methods_have_one_result(self):
         method_names = ['version', 'total_index_size']
@@ -100,7 +100,8 @@ class TestPgextras(unittest.TestCase):
                 results = pg.calls()
                 self.assertTrue(len(results), 10)
             else:
-                self.assertRaises(Exception, pg.calls)
+                results = pg.calls()
+                self.assertIsNotNone(results[0].error)
 
     def test_blocking(self):
         statement = """
@@ -191,6 +192,12 @@ class TestPgextras(unittest.TestCase):
             Record.version = 'PostgreSQL 9.1.1 on x86_64-apple-darwin13.0.0'
             pg._is_pg_at_least_nine_two = None
             self.assertFalse(pg.is_pg_at_least_nine_two())
+
+    def test_error_property_exists_for_missing_pg_stat_statement(self):
+        with PgExtras(dsn=self.dsn) as pg:
+            results = pg.get_missing_pg_stat_statement_error()
+
+            self.assertIsNotNone(results.error)
 
     def tearDown(self):
         self.cursor.close()
