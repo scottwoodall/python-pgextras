@@ -2,8 +2,8 @@
 Usage
 =====
 
-Your "dsn" value will be specific to the postgres database you want to connect to.
-See the `postgres documentation
+Your ``dsn`` value will be specific to the Postgres database you want to connect to.
+See the `Postgres documentation
 <http://www.postgresql.org/docs/current/static/libpq-connect.html#LIBPQ-CONNSTRING>`_
 for more information on configuring connection strings::
 
@@ -16,6 +16,10 @@ for more information on configuring connection strings::
     Record(type='index', schemaname='public', object_name='addresses_to_geocode::addresses_to_geocode_address_trgm_idx', bloat=Decimal('1.6'), waste='233 MB')
     Record(type='table', schemaname='public', object_name='addresses_to_geocode', bloat=Decimal('1.2'), waste='84 MB')
     Record(type='table', schemaname='pg_catalog', object_name='pg_attribute', bloat=Decimal('2.5'), waste='1056 kB')
+
+Or from the CLI::
+
+    $ pgextras -dsn "dbname=testing" -methods bloat version
 
 Class Methods
 ######################

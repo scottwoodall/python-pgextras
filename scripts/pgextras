@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import argparse
+
+from pgextras import PgExtras
+from prettytable import PrettyTable
+
+METHODS = [
+    ('bloat', 'Table and index bloat in your database ordered by most '
+     'wasteful.'),
+    ('blocking', 'Queries holding locks other queryes are qaiting to be '
+     'releases'),
+    ('cache_hit', 'Calculates your cache hit rate (effective databases are at '
+     '99% and up).'),
+    ('calls', 'Show 10 most frequently called queries. Requires the '
+     'pg_stat_statements.'),
+    ('index_usage', 'Calculates your index hit rate (effective databases are '
+     'at 99% and up).'),
+    ('locks', 'Display queries with active locks.'),
+    ('long_running_queries', 'Show all queries longer than five minutes by '
+     'descending duration.'),
+    ('outliers', 'Show 10 queries that have longest execution time in '
+     'aggregate. Requires the pg_stat_statments.'),
+    ('ps', 'View active queries with execution time.'),
+    ('seq_scans', 'Show the count of sequential scans by table descending by '
+     'order.'),
+    ('total_table_size', 'Show the size of the tables (including indexes), '
+     'descending by size.'),
+    ('unused_indexes', 'Show unused and almost unused indexes, ordered by '
+     'their size relative to the number of index scans.'),
+    ('vacuum_stats', 'Show dead rows and whether an automatic vacuum is '
+     'expected to be triggered.'),
+    ('version', 'Get the Postgres server version.'),
+]
+
+
+def main(args):
+    with PgExtras(dsn=args.dsn) as pg:
+        for method in args.methods:
+            try:
+                func = getattr(pg, method)
+            except AttributeError as error:
+                raise SystemExit(1, str(error))
+
+            records = func()
+
+            try:
+                table = PrettyTable(records[0]._asdict().keys())
+            except IndexError:
+                table = 'No records'
+            else:
+                table.align = 'l'
+
+                for record in records:
+                    table.add_row(record._asdict().values())
+
+            print(' ')
+            print(method)
+            print('#' * 79)
+            print(table)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='CLI for PgExtras',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="\n".join("{}: {}".format(k, v) for k, v in METHODS),
+    )
+
+    parser.add_argument('-dsn', required=True)
+    parser.add_argument('-methods', nargs='+', default=['version'])
+    main(parser.parse_args())

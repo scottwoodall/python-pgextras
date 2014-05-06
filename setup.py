@@ -33,6 +33,7 @@ setup(
                  'pgextras'},
     include_package_data=True,
     install_requires=[
+        'prettytable',
     ],
     license="BSD",
     zip_safe=False,
@@ -48,4 +49,5 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     test_suite='tests',
+    scripts=['scripts/pgextras'],
 )
