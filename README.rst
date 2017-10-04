@@ -45,10 +45,12 @@ formatted to make it easier to understand the data available to you.
 Dev Install
 ###########
 
-This is specific to the `update-sql-statements` branch
+This is specific to the ::
+    update-sql-statements branch
 Clone the repository and change the branch to `update-sql-statements`
-`cd` in to the directory and run `python setup.py install`
-This should install the `pgextras` exectutable
+cd in to the directory and run ::
+    python setup.py install
+This should install the pgextras exectutable
 
 Now, you can use any postgres database to run pgextras
 
