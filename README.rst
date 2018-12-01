@@ -4,7 +4,7 @@ python-pgextras
 
 .. image:: https://badge.fury.io/py/pgextras.png
     :target: http://badge.fury.io/py/pgextras
-    
+
 .. image:: https://travis-ci.org/scottwoodall/python-pgextras.png?branch=master
         :target: https://travis-ci.org/scottwoodall/python-pgextras
 
@@ -41,6 +41,18 @@ method returns the following::
 
 It's up to you on how to format and present the data. The results below are
 formatted to make it easier to understand the data available to you.
+
+Dev Install
+###########
+
+This is specific to the ::
+    update-sql-statements branch
+Clone the repository and change the branch to `update-sql-statements`
+cd in to the directory and run ::
+    python setup.py install
+This should install the pgextras exectutable
+
+Now, you can use any postgres database to run pgextras
 
 
 Cache Hit
@@ -175,7 +187,7 @@ Show the size of the tables (including indexes), descending by size::
 Total Indexes Size
 ******************
 Show the total size of all the indexes on each table, descending by size::
-    
+
     | table            | index_size   |
     |------------------+--------------|
     | pgbench_accounts | 2208 kB      |

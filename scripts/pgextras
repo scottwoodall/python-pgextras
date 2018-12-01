@@ -24,6 +24,11 @@ METHODS = [
     ('ps', 'View active queries with execution time.'),
     ('seq_scans', 'Show the count of sequential scans by table descending by '
      'order.'),
+    ('total_index_size', 'Show the total size of all indexes.'),
+    ('total_indexes_size', 'Show the total size of all the indexes on each'
+        'table, descending by size.'),
+    ('table_size', 'Show the size of the tables (excluding indexes),'
+        'descending by size.'),
     ('total_table_size', 'Show the size of the tables (including indexes), '
      'descending by size.'),
     ('unused_indexes', 'Show unused and almost unused indexes, ordered by '
@@ -61,10 +66,11 @@ def main(args):
 
 
 if __name__ == '__main__':
+    left_column_length = 30
     parser = argparse.ArgumentParser(
         description='CLI for PgExtras',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="\n".join("{}: {}".format(k, v) for k, v in METHODS),
+        epilog="\n".join("{}: {} {}".format(k, " " * (left_column_length - len(k)), v) for k, v in METHODS),
     )
 
     parser.add_argument('-dsn', required=True)
