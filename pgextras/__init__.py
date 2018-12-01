@@ -9,7 +9,7 @@ from . import sql_constants as sql
 
 __author__ = 'Scott Woodall'
 __email__ = 'scott.woodall@gmail.com'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 
 class PgExtras(object):
