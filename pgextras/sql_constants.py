@@ -247,7 +247,7 @@ BLOAT = """
         SELECT
             'table' AS type,
             schemaname,
-            tablename AS object_name,
+            tablename || '' AS object_name,
             ROUND(
                 CASE
                     WHEN otta=0
