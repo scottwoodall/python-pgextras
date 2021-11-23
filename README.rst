@@ -50,7 +50,7 @@ This is specific to the ::
 Clone the repository and change the branch to `update-sql-statements`
 cd in to the directory and run ::
     python setup.py install
-This should install the pgextras exectutable
+This should install the pgextras executable
 
 Now, you can use any postgres database to run pgextras
 
