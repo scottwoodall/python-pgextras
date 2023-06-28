@@ -4,6 +4,7 @@ from collections import namedtuple
 
 import psycopg2
 import psycopg2.extras
+from packaging.version import parse as parse_version
 
 from . import sql_constants as sql
 
@@ -19,6 +20,7 @@ class PgExtras(object):
         self._cursor = None
         self._conn = None
         self._is_pg_at_least_nine_two = None
+        self._is_pg_at_least_thirteen = None
 
     def __enter__(self):
         """
@@ -68,6 +70,19 @@ class PgExtras(object):
         else:
             return 'procpid'
 
+    @property
+    def total_time_column(self):
+        """
+        PG13 changed column names.
+
+        :returns: str
+        """
+
+        if self.is_pg_at_least_thirteen():
+            return 'total_exec_time'
+        else:
+            return 'total_time'
+
     def pg_stat_statement(self):
         """
         Some queries require the pg_stat_statement module to be installed.
@@ -111,16 +126,37 @@ class PgExtras(object):
 
         if self._is_pg_at_least_nine_two is None:
             results = self.version()
-            regex = re.compile("PostgreSQL (\d+\.\d+\.\d+) on")
+            regex = re.compile(r"PostgreSQL (\d+(\.\d+)+) on")
             matches = regex.match(results[0].version)
             version = matches.groups()[0]
 
-            if version > '9.2.0':
+            if parse_version(version) > parse_version('9.2.0'):
                 self._is_pg_at_least_nine_two = True
             else:
                 self._is_pg_at_least_nine_two = False
 
         return self._is_pg_at_least_nine_two
+
+    def is_pg_at_least_thirteen(self):
+        """
+        Some queries have different syntax depending what version of postgres
+        we are querying against.
+
+        :returns: boolean
+        """
+
+        if self._is_pg_at_least_thirteen is None:
+            results = self.version()
+            regex = re.compile(r"PostgreSQL (\d+(\.\d+)+) on")
+            matches = regex.match(results[0].version)
+            version = matches.groups()[0]
+
+            if parse_version(version) >= parse_version('13'):
+                self._is_pg_at_least_thirteen = True
+            else:
+                self._is_pg_at_least_thirteen = False
+
+        return self._is_pg_at_least_thirteen
 
     def close_db_connection(self):
         if self._cursor is not None:
@@ -203,7 +239,7 @@ class PgExtras(object):
             else:
                 select = 'SELECT query,'
 
-            return self.execute(sql.CALLS.format(select=select))
+            return self.execute(sql.CALLS.format(select=select, tot_time=self.total_time_column))
         else:
             return [self.get_missing_pg_stat_statement_error()]
 
@@ -258,7 +294,7 @@ class PgExtras(object):
             else:
                 query = 'query'
 
-            return self.execute(sql.OUTLIERS.format(query=query))
+            return self.execute(sql.OUTLIERS.format(query=query, tot_time=self.total_time_column))
         else:
             return [self.get_missing_pg_stat_statement_error()]
 
