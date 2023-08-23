@@ -53,8 +53,8 @@ VACUUM_STATS = """
 
 OUTLIERS = """
     SELECT {query} AS qry,
-        interval '1 millisecond' * total_time AS exec_time,
-        to_char((total_time/sum(total_time) OVER()) * 100,
+        interval '1 millisecond' * {tot_time} AS exec_time,
+        to_char(({tot_time}/sum({tot_time}) OVER()) * 100,
             'FM90D0') || '%' AS
         prop_exec_time,
         to_char(calls, 'FM999G999G999G990') AS ncalls,
@@ -67,7 +67,7 @@ OUTLIERS = """
         WHERE usename = current_user
         LIMIT 1
     )
-    ORDER BY total_time DESC
+    ORDER BY {tot_time} DESC
     LIMIT 10
 """
 
@@ -101,8 +101,8 @@ INDEX_USAGE = """
 """
 
 CALLS = """
-    {select} interval '1 millisecond' * total_time AS exec_time,
-        to_char((total_time/sum(total_time) OVER()) * 100, 'FM90D0') || '%'
+    {select} interval '1 millisecond' * {tot_time} AS exec_time,
+        to_char(({tot_time}/sum({tot_time}) OVER()) * 100, 'FM90D0') || '%'
             AS prop_exec_time,
         to_char(calls, 'FM999G999G990') AS ncalls,
         interval '1 millisecond' * (blk_read_time + blk_write_time)
